@@ -1,8 +1,7 @@
 import nltk
-import tkinter as tk
 from nltk.corpus import words
 from nltk.corpus import wordnet as wn
-from tkinter import messagebox, scrolledtext
+from flask import Flask, request, jsonify
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 nltk.download('words')
@@ -43,7 +42,7 @@ def definitions(word):
         example = "; ".join(syn.examples())
         result.append(f"{pos.upper()}: {definition}")
         if example:
-            result.append(f"Example: {example}")
+            result.append(f"Example: {example}\n")
 
     return "\n".join(result)
 
