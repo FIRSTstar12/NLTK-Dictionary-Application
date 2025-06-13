@@ -48,33 +48,46 @@ def definitions(word):
     return "\n".join(result)
 
 
+def search_word():
+    word = entry.get().strip()
+    output.delete('1.0', tk.END)
 
-def main():
-    print("Welcome to the NLTK dictionary app!\nType a word in to see if it is a valid English word.\nType exit to exit the program.\n")
-    while True:
-        word = input("Enter your word: ")
-        if word == "exit":
-            print("Thank You for using the NLTK dictionary!")
-            break
-        if validate(word):
-            print(str(word)+" is a valid English word")
+    if not word:
+        messagebox.showinfo("Input Needed", "Please enter a word.")
+        return
 
-            print("Definition:\n"+definitions(word))
+    if validate(word):
+        output.insert(tk.END, f"✅ '{word}' is a valid English word.\n\n")
+        output.insert(tk.END, "📚 Definitions:\n")
+        output.insert(tk.END, definitions(word) + "\n\n")
 
-            if len(suggestWords(word)) > 0:
-                print("Here are some similar words(One letter difference):")
-                print(", ".join(suggestWords(word)))
-            else:
-                print("No suggestions found")
+        suggestions = suggestWords(word)
+        if suggestions:
+            output.insert(tk.END, "💡 Similar words (1-letter off):\n")
+            output.insert(tk.END, ", ".join(suggestions) + "\n")
+    else:
+        output.insert(tk.END, f"❌ '{word}' is not a valid English word.\n\n")
+        options = autoComplete(word)
+        if options:
+            output.insert(tk.END, "Did you mean:\n")
+            output.insert(tk.END, ", ".join(options) + "\n")
         else:
-            print("Not a valid English word")
-            options = autoComplete(word)
-            if len(options) > 0:
-                print("Did you mean?: ")
-                print(" ,".join(options))
-            else:
-                print("No suggestions found")
+            output.insert(tk.END, "No suggestions found.")
 
-if __name__ == "__main__":
-    main()
+root = tk.Tk()
+root.title("Word Explorer")
+root.geometry("600x500")
 
+label = tk.Label(root, text="Enter a word:", font=("Arial", 12))
+label.pack(pady=10)
+
+entry = tk.Entry(root, width=40, font=("Arial", 14))
+entry.pack()
+
+search_button = tk.Button(root, text="Search", command=search_word, font=("Arial", 12))
+search_button.pack(pady=5)
+
+output = scrolledtext.ScrolledText(root, height=20, width=70, font=("Consolas", 11))
+output.pack(pady=10)
+
+root.mainloop()
