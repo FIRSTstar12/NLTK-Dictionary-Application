@@ -46,34 +46,36 @@ def definitions(word):
 
     return "\n".join(result)
 
+app = Flask(__name__)
 
+@app.route("/")
+def home():
+    return "Welcome to the Word Explorer API!"
 
-def main():
-    print("Welcome to the NLTK dictionary app!\nType a word in to see if it is a valid English word.\nType exit to exit the program.\n")
-    while True:
-        word = input("Enter your word: ")
-        if word == "exit":
-            print("Thank You for using the NLTK dictionary!")
-            break
-        if validate(word):
-            print(str(word)+" is a valid English word")
+@app.route("/check", methods=["GET"])
+def check_word():
+    word = request.args.get("word", "")
+    is_valid = validate(word)
+    return jsonify({"word": word, "valid": is_valid})
 
-            print("Definition:\n"+definitions(word))
+@app.route("/define", methods=["GET"])
+def define_word():
+    word = request.args.get("word", "")
+    defs = definitions(word)
+    return jsonify({"word": word, "definitions": defs})
 
-            if len(suggestWords(word)) > 0:
-                print("Here are some similar words(One letter difference):")
-                print(", ".join(suggestWords(word)))
-            else:
-                print("No suggestions found")
-        else:
-            print("Not a valid English word")
-            options = autoComplete(word)
-            if len(options) > 0:
-                print("Did you mean?: ")
-                print(" ,".join(options))
-            else:
-                print("No suggestions found")
+@app.route("/suggest", methods=["GET"])
+def suggest():
+    word = request.args.get("word", "")
+    suggestions = suggestWords(word)
+    return jsonify({"word": word, "suggestions": suggestions})
 
+@app.route("/autocomplete", methods=["GET"])
+def autocomplete():
+    prefix = request.args.get("prefix", "")
+    suggestions = autoComplete(prefix)
+    return jsonify({"prefix": prefix, "suggestions": suggestions})
+
+# Run server
 if __name__ == "__main__":
-    main()
-
+    app.run(debug=True)
