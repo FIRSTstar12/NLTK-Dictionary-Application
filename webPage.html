@@ -1,0 +1,26 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Word Explorer</title>
+</head>
+<body>
+    <h1>Word Explorer</h1>
+    <form method="post">
+        <input type="text" name="word" placeholder="Enter a word" required>
+        <button type="submit">Check</button>
+    </form>
+
+    {% if word %}
+        <h2>Results for "{{ word }}"</h2>
+        <p><strong>Valid:</strong> {{ is_valid }}</p>
+        <p><strong>Definitions:</strong><br>{{ definitions|safe }}</p>
+        {% if suggestions %}
+            <p><strong>Suggestions:</strong> {{ suggestions|join(', ') }}</p>
+        {% endif %}
+        {% if autocomplete %}
+            <p><strong>Autocomplete:</strong> {{ autocomplete|join(', ') }}</p>
+        {% endif %}
+    {% endif %}
+</body>
+</html>
