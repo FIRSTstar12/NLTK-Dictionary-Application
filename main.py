@@ -1,4 +1,5 @@
 import nltk
+import os
 from nltk.corpus import words
 from nltk.corpus import wordnet as wn
 from flask import Flask, request, jsonify
@@ -78,4 +79,5 @@ def autocomplete():
 
 # Run server
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 10000))
+    app.run(debug=False, host='0.0.0.0', port=port)
