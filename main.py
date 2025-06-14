@@ -2,12 +2,15 @@ import nltk
 import os
 from nltk.corpus import words
 from nltk.corpus import wordnet as wn
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
+
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 nltk.download('words')
 
 wordList = words.words()
+
+app = Flask(__name__)
 
 validWords = set(word.lower() for word in wordList)
 
@@ -45,39 +48,33 @@ def definitions(word):
         if example:
             result.append(f"Example: {example}\n")
 
-    return "\n".join(result)
+    return "<br>".join(result)
 
-app = Flask(__name__)
-
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
-    return "Welcome to the Word Explorer API!"
+    word = ""
+    is_valid = False
+    defs = ""
+    suggestions = []
+    autocomplete = []
 
-@app.route("/check", methods=["GET"])
-def check_word():
-    word = request.args.get("word", "")
-    is_valid = validate(word)
-    return jsonify({"word": word, "valid": is_valid})
+    if request.method == "POST":
+        word = request.form["word"]
+        is_valid = validate(word)
+        defs = definitions(word)
+        if is_valid:
+            suggestions = suggestWords(word)
+        else:
+            autocomplete = autoComplete(word)
 
-@app.route("/define", methods=["GET"])
-def define_word():
-    word = request.args.get("word", "")
-    defs = definitions(word)
-    return jsonify({"word": word, "definitions": defs})
+    return render_template("index.html",
+        word=word,
+        is_valid=is_valid,
+        definitions=defs,
+        suggestions=suggestions,
+        autocomplete=autocomplete
+    )
 
-@app.route("/suggest", methods=["GET"])
-def suggest():
-    word = request.args.get("word", "")
-    suggestions = suggestWords(word)
-    return jsonify({"word": word, "suggestions": suggestions})
-
-@app.route("/autocomplete", methods=["GET"])
-def autocomplete():
-    prefix = request.args.get("prefix", "")
-    suggestions = autoComplete(prefix)
-    return jsonify({"prefix": prefix, "suggestions": suggestions})
-
-# Run server
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 10000))
-    app.run(debug=False, host='0.0.0.0', port=port)
+    app.run(debug=True, host='0.0.0.0', port=port)
