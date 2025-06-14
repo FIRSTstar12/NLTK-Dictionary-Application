@@ -48,7 +48,7 @@ def definitions(word):
         if example:
             result.append(f"Example: {example}\n")
 
-    return "<br>".join(result)
+    return "<br />".join(result)
 
 @app.route("/", methods=["GET", "POST"])
 def home():
