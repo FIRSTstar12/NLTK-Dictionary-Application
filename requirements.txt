@@ -1,2 +1,5 @@
 Flask
 nltk
+gunicorn
+wordnet
+gunicorn==20.1.0
