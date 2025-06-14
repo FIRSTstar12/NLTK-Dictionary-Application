@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Word Explorer</title>
+    <title>NLTK Dictionary Application</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Word Explorer</h1>
-    <form method="POST">
-        <input type="text" name="word" placeholder="Enter a word" required>
-        <button type="submit">Search</button>
-    </form>
+    <div class="container">
+        <h1>NLTK Dictionary Application</h1>
 
-    {% if word %}
-        <h2>Results for "{{ word }}"</h2>
+        <form method="POST">
+            <input type="text" name="word" placeholder="Enter a word" required>
+            <button type="submit">Search</button>
+        </form>
 
-        {% if is_valid %}
-            <p><strong>Valid Word:</strong> Yes</p>
-            <p><strong>Definitions:</strong><br>{{ definitions | safe }}</p>
-            <p><strong>One-Letter Suggestions:</strong> {{ suggestions | join(", ") }}</p>
-        {% else %}
-            <p><strong>Valid Word:</strong> No</p>
-            <p><strong>Autocomplete Suggestions:</strong> {{ autocomplete | join(", ") }}</p>
+        {% if word %}
+            <div class="results">
+                <h2>Results for "{{ word }}"</h2>
+
+                {% if is_valid %}
+                    <p><strong>Valid Word:</strong> Yes</p>
+                    <p><strong>Definitions:</strong><br>{{ definitions | safe }}</p>
+                    <p><strong>One-Letter Suggestions:</strong> {{ suggestions | join(", ") }}</p>
+                {% else %}
+                    <p><strong>Valid Word:</strong> No</p>
+                    <p><strong>Autocomplete Suggestions:</strong> {{ autocomplete | join(", ") }}</p>
+                {% endif %}
+            </div>
         {% endif %}
-    {% endif %}
+    </div>
 </body>
 </html>
