@@ -67,6 +67,7 @@ def home():
     defs = ""
     suggestions = []
     autocomplete = []
+    daily, dailyDef = dailyWord(wordList)
 
     if request.method == "POST":
         word = request.form["word"]
@@ -82,7 +83,9 @@ def home():
         is_valid=is_valid,
         definitions=defs,
         suggestions=suggestions,
-        autocomplete=autocomplete
+        autocomplete=autocomplete,
+        daily = daily,
+        dailyDef = dailyDef
     )
 
 if __name__ == "__main__":
