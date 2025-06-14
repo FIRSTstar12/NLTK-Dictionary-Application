@@ -1,16 +1,12 @@
 import nltk
-import os
 from nltk.corpus import words
 from nltk.corpus import wordnet as wn
-from flask import Flask, request, jsonify, render_template
-
+from flask import Flask, request, jsonify
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 nltk.download('words')
 
 wordList = words.words()
-
-app = Flask(__name__)
 
 validWords = set(word.lower() for word in wordList)
 
@@ -48,33 +44,36 @@ def definitions(word):
         if example:
             result.append(f"Example: {example}\n")
 
-    return "<br />".join(result)
+    return "\n".join(result)
 
-@app.route("/", methods=["GET", "POST"])
-def home():
-    word = ""
-    is_valid = False
-    defs = ""
-    suggestions = []
-    autocomplete = []
 
-    if request.method == "POST":
-        word = request.form["word"]
-        is_valid = validate(word)
-        defs = definitions(word)
-        if is_valid:
-            suggestions = suggestWords(word)
+
+def main():
+    print("Welcome to the NLTK dictionary app!\nType a word in to see if it is a valid English word.\nType exit to exit the program.\n")
+    while True:
+        word = input("Enter your word: ")
+        if word == "exit":
+            print("Thank You for using the NLTK dictionary!")
+            break
+        if validate(word):
+            print(str(word)+" is a valid English word")
+
+            print("Definition:\n"+definitions(word))
+
+            if len(suggestWords(word)) > 0:
+                print("Here are some similar words(One letter difference):")
+                print(", ".join(suggestWords(word)))
+            else:
+                print("No suggestions found")
         else:
-            autocomplete = autoComplete(word)
-
-    return render_template("index.html",
-        word=word,
-        is_valid=is_valid,
-        definitions=defs,
-        suggestions=suggestions,
-        autocomplete=autocomplete
-    )
+            print("Not a valid English word")
+            options = autoComplete(word)
+            if len(options) > 0:
+                print("Did you mean?: ")
+                print(" ,".join(options))
+            else:
+                print("No suggestions found")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(debug=True, host='0.0.0.0', port=port)
+    main()
+
