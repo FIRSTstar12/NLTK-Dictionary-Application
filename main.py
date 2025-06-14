@@ -1,3 +1,6 @@
+import random
+from datetime import date
+from random import randint
 import nltk
 import os
 from nltk.corpus import words
@@ -13,6 +16,13 @@ wordList = words.words()
 app = Flask(__name__)
 
 validWords = set(word.lower() for word in wordList)
+
+def dailyWord(listOfPossibleWords):
+    today = date.today().toordinal()
+    random.seed(today)
+    wordToday = random.choice(list(validWords))
+    return wordToday, definitions(wordToday)
+
 
 def validate (word):
     if word.lower() in validWords:
